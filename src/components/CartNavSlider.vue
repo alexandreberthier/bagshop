@@ -8,7 +8,7 @@
       <div class="content" v-else>
         <div class="cart-items-flex">
           <div v-for="(item, index) in cartStore.itemsInCart" class="cart-item">
-            <div
+            <div v-if="item"
                 @click="cartStore.deleteProduct(item.product)"
                 class="icon-wrapper">
               <img :src="getImage('ic_delete.png')" alt="">
@@ -23,12 +23,15 @@
               <div class="price-wrapper">
                 <p>{{item.quantity}}</p>
                 <p>x</p>
-                <p>{{item.product.getFormattedPrice()}}</p>
+                <p>{{formatPrice(item.product.price)}}</p>
                 <p> | {{formatPrice(item.product.price * item.quantity)}}</p>
               </div>
             </div>
             </div>
         </div>
+       <div class="total-price">
+         <p>Gesamtpreis</p>
+       </div>
         <DynamicButton
             @click="cartStore.hideCartSlider()"
             :is-router-link="true"
