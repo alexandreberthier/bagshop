@@ -1,7 +1,7 @@
 <template>
   <div class="nav-wrapper">
     <router-link
-        @click="navbarStore.closeMenu()"
+        @click="navbarStore.closeMenu(), cartStore.hideCartSlider()"
         :to="{name: SiteLinks.Home}">
       <div class="logo-wrapper">
         <img :src="getImage('logo.png')" alt="Logo, zurück zur Startseite">
@@ -19,6 +19,7 @@
     </div>
     <div class="icon-section">
       <router-link
+          @click="cartStore.hideCartSlider(),  navbarStore.closeMenu()"
           v-if="!userStore.isLoggedIn"
           :to="{name: SiteLinks.Register}">
         <div class="image-wrapper">
@@ -26,6 +27,7 @@
         </div>
       </router-link>
       <router-link
+          @click="cartStore.hideCartSlider(), navbarStore.closeMenu()"
           v-if="!userStore.isLoggedIn"
           :to="{name: SiteLinks.Login}">
         <div class="image-wrapper">
@@ -34,14 +36,19 @@
       </router-link>
       <div v-if="userStore.isLoggedIn"
            @click="logOut"
-          class="image-wrapper">
+           class="image-wrapper">
         <img :src="getImage('ic_logout.png')" alt="Ausloggen">
       </div>
-      <div class="image-wrapper">
+      <div
+          @click="cartStore.toggleCartSlider(), navbarStore.closeMenu()"
+          class="image-wrapper">
         <img :src="getImage('ic_cart.png')" alt="Zum Warenkorb">
+        <div v-if="cartStore.totalCartItems" class="item-counter">
+          <p>{{ cartStore.totalCartItems }}</p>
+        </div>
       </div>
       <div
-          @click="navbarStore.toggleMenu()"
+          @click="navbarStore.toggleMenu() , cartStore.hideCartSlider()"
           :class="['burger-menu', {'active': navbarStore.menuOpen}]">
         <span></span>
       </div>
@@ -56,11 +63,13 @@ import {SiteLinks} from "@/enums/SiteLinks";
 import {useNavbarStore} from "@/stores/navbarStore";
 import {useUserStore} from "@/stores/userStore";
 import router from "@/router";
+import {useCartStore} from "@/stores/cartStore";
 
 const navbarStore = useNavbarStore()
 const userStore = useUserStore()
+const cartStore = useCartStore()
 
-async function logOut(){
+async function logOut() {
   await userStore.logout()
   await router.push({name: SiteLinks.Home})
 }
@@ -119,10 +128,10 @@ const links = ref([
     padding: 50px;
     position: fixed;
     top: 100px;
-    right: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    transform: translateX(100%);
+    transform: translateX(-100%);
     opacity: 0;
     transition: all 250ms ease-in-out;
     background-color: var(--white);
@@ -144,6 +153,25 @@ const links = ref([
 
     .image-wrapper {
       cursor: pointer;
+      position: relative;
+
+      .item-counter {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--white);
+        border: 1px solid var(--black);
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        position: absolute;
+        top: -10px;
+        right: -10px;
+
+        p {
+          font-size: 12px;
+        }
+      }
 
       img {
         width: 30px;

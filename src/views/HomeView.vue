@@ -46,8 +46,7 @@ const productStore = useProductStore()
 
 const products: ComputedRef<Product[]> = computed(() => {
   return productStore.products.map(dto => Product.fromDto(dto));
-});
-
+})
 
 const searchInput: Ref<string> = ref('')
 const selectedCategory: Ref<string> = ref('')
@@ -55,12 +54,12 @@ const selectedCategory: Ref<string> = ref('')
 const filteredProducts = computed(() => {
   const byCategory = products.value.filter((product: Product) => {
     return !selectedCategory.value || product.category === selectedCategory.value;
-  });
+  })
 
   return byCategory.filter((product: Product) => {
     return !searchInput.value || product.displayName.toLowerCase().includes(searchInput.value.toLowerCase());
-  });
-});
+  })
+})
 
 
 function resetFilters() {
@@ -144,8 +143,6 @@ const categoryOptions = ref([
       cursor: pointer;
     }
   }
-
-
 }
 
 .product-flex {

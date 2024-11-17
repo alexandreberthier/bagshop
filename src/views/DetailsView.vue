@@ -18,9 +18,21 @@
       </div>
 
       <div class="product-info">
-        <p class="article-number">Artikelnummer: {{ displayedProduct.id }}</p>
-        <p class="display-name">{{ displayedProduct.displayName }}</p>
-        <p class="price">{{ displayedProduct.getFormattedPrice() }}</p>
+        <div class="top">
+          <p class="article-number">Artikelnummer: {{ displayedProduct.id }}</p>
+          <p class="display-name">{{ displayedProduct.displayName }}</p>
+          <p class="price">{{ displayedProduct.getFormattedPrice() }}</p>
+        </div>
+        <div class="button-section">
+          <DynamicButton
+              button-text="In den Warenkorb"
+              @click="cartStore.addProduct(displayedProduct, quantity)"
+          />
+          <QuantityButton
+              @increase="increaseQuantity"
+              @decrease="decreaseQuantity"
+              :quantity="quantity"/>
+        </div>
         <p class="desc">{{ displayedProduct.description }}</p>
       </div>
     </div>
@@ -30,16 +42,34 @@
 
 <script setup lang="ts">
 
-import {computed, type ComputedRef, ref} from "vue";
+import {computed, type ComputedRef, type Ref, ref} from "vue";
 import {useProductStore} from "@/stores/productStore";
 import {getImage} from "@/utils/ImageUtils";
 import {Product} from "@/models/Product";
+import DynamicButton from "@/components/DynamicButton.vue";
+import QuantityButton from "@/components/QuantityButton.vue";
+import {useCartStore} from "@/stores/cartStore";
 
 const {id} = defineProps<{
   id: string
 }>()
 
 const productStore = useProductStore()
+const cartStore = useCartStore()
+
+const quantity: Ref<number> = ref(1)
+
+function increaseQuantity() {
+  if (quantity.value < 5) {
+    quantity.value++
+  }
+}
+
+function decreaseQuantity() {
+  if (quantity.value > 1) {
+    quantity.value--
+  }
+}
 
 const displayedProduct: ComputedRef<Product | undefined> = computed(() => {
   const dto = productStore.products.find(product => product.id === id);
@@ -51,7 +81,6 @@ const images = ref<string[]>([]);
 if (displayedProduct.value) {
   images.value = [...displayedProduct.value.images];
 }
-
 
 function swapImage(index: number) {
   const selectedImage = images.value[index];
@@ -110,20 +139,32 @@ function swapImage(index: number) {
   .product-info {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 32px;
 
-    .article-number {
-      font-size: 14px;
+    .top {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .article-number {
+        font-size: 14px;
+      }
+
+      .display-name {
+        font-size: 24px;
+      }
+
+      .price {
+        font-size: 18px;
+        font-style: italic;
+        color: saddlebrown;
+      }
     }
 
-    .display-name {
-      font-size: 24px;
-    }
-
-    .price {
-      font-size: 18px;
-      font-style: italic;
-      color: saddlebrown;
+    .button-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
     .desc {

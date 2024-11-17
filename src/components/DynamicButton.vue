@@ -5,7 +5,7 @@
       tabindex="0"
       :role="isRouterLink ? 'link' : 'button'"
       :aria-label="buttonText"
-      v-bind="isRouterLink && route ? { to: { path: route.pathName, hash: route.hash } } : null"
+      v-bind="isRouterLink && route ? { to: { name: route.pathName, hash: route.hash } } : null"
       class="button"
   >
     <p>{{ buttonText }}</p>
@@ -39,7 +39,7 @@ const {isRouterLink, route, buttonText} = defineProps<{
   justify-content: center;
   gap: 10px;
   box-sizing: border-box;
-  padding: 2px 15px;
+  padding: 5px 10px;
   background: black;
   cursor: pointer;
   transition: all 150ms ease-in-out;
@@ -68,8 +68,7 @@ const {isRouterLink, route, buttonText} = defineProps<{
 
   p {
     color: white;
-    font-size: 18px;
-    font-weight: 700;
+
   }
 }
 

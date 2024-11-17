@@ -56,7 +56,7 @@ const router = createRouter({
       props: true
     },
     {
-      path: '/cart',
+      path: '/warenkorb',
       name: 'cart',
       component: CartView
     },
@@ -104,6 +104,22 @@ const router = createRouter({
       ]
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else if (to.hash) {
+      const element = document.querySelector(to.hash);
+      if (element) {
+        return {
+          el: element,
+          behavior: 'smooth'
+        };
+      }
+    } else {
+      return { top: 0, left: 0, behavior: "smooth" }
+    }
+  },
+
 })
 
 router.beforeEach(async (to, from, next) => {

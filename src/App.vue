@@ -1,13 +1,14 @@
 <template>
-  <nav>
-    <Navbar/>
-  </nav>
-  <main>
-    <RouterView/>
-  </main>
-  <footer>
+    <nav>
+      <Navbar/>
+      <CartNavSlider/>
+    </nav>
+    <main>
+      <RouterView/>
+    </main>
+    <footer>
 
-  </footer>
+    </footer>
 
 
 </template>
@@ -22,9 +23,12 @@ userStore.fetchUser()
 
 
 import Navbar from "@/components/Navbar.vue";
+import CartNavSlider from "@/components/CartNavSlider.vue";
+
 </script>
 
 <style scoped>
+
 
 nav {
   position: fixed;
