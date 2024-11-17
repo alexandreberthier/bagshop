@@ -6,7 +6,7 @@
       :role="isRouterLink ? 'link' : 'button'"
       :aria-label="buttonText"
       v-bind="isRouterLink && route ? { to: { name: route.pathName, hash: route.hash } } : null"
-      class="button"
+      :class="['button', buttonType]"
   >
     <p>{{ buttonText }}</p>
     <div v-if="isRouterLink" class="icon-wrapper">
@@ -17,16 +17,18 @@
 
 <script setup lang="ts">
 import {getImage} from "@/utils/ImageUtils";
+import {ButtonType} from "@/enums/ButtonType";
 
 interface RouterOption {
   pathName: string,
   hash?: string
 }
 
-const {isRouterLink, route, buttonText} = defineProps<{
+const {isRouterLink, route, buttonText, buttonType = ButtonType.Primary } = defineProps<{
   isRouterLink?: boolean,
   route?: RouterOption
   buttonText: string,
+  buttonType?: ButtonType
 }>()
 
 </script>
@@ -45,6 +47,15 @@ const {isRouterLink, route, buttonText} = defineProps<{
   transition: all 150ms ease-in-out;
   width: 100%;
   height: 50px;
+
+  &.secondary {
+    background-color: var(--white);
+    border: 1px solid var(--black);
+
+    p {
+      color: var(--black)
+    }
+  }
 
   &:hover .icon-wrapper img {
     transform: translateX(5px);

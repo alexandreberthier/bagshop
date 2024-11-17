@@ -1,19 +1,20 @@
-import {defineStore} from "pinia";
-import {computed, ref, watch} from "vue";
-import type {Ref} from "vue";
-import type {Product} from "@/models/Product";
-import {useRoute} from "vue-router";
-
+import { defineStore } from "pinia";
+import { computed, ref, watch } from "vue";
+import type { Ref } from "vue";
+import type { Product } from "@/models/Product";
+import { Product as ProductModel } from "@/models/Product";
 
 export const useCartStore = defineStore('cart', () => {
-
-    const route = useRoute()
-
-    const showCartSlider: Ref<boolean> = ref(false)
+    const showCartSlider: Ref<boolean> = ref(false);
 
     const savedCart = localStorage.getItem('cartItems');
     const itemsInCart: Ref<{ product: Product, quantity: number }[]> = ref(
-        savedCart ? JSON.parse(savedCart) : []
+        savedCart
+            ? JSON.parse(savedCart).map((item: any) => ({
+                product: ProductModel.fromDto(item.product),
+                quantity: item.quantity
+            }))
+            : []
     );
 
     function addProduct(product: Product, quantity: number) {
@@ -25,10 +26,9 @@ export const useCartStore = defineStore('cart', () => {
             itemsInCart.value.push({
                 product: product,
                 quantity: quantity
-            })
+            });
         }
     }
-
 
     function deleteProduct(product: Product) {
         const itemIndex = itemsInCart.value.findIndex(item => item.product.id === product.id);
@@ -39,45 +39,40 @@ export const useCartStore = defineStore('cart', () => {
     }
 
     const totalCartItems = computed(() => {
-        return itemsInCart.value.reduce((total, item) => {
-            return total + item.quantity
-        }, 0)
-    })
+        return itemsInCart.value.reduce((total, item) => total + item.quantity, 0);
+    });
 
     const totalCartPrice = computed(() => {
         return itemsInCart.value.reduce((total, item) => {
-            return total + item.product.price * item.quantity
-        }, 0)
-    })
+            return total + item.product.price * item.quantity;
+        }, 0);
+    });
 
-    const deliveryCosts: Ref<number> = ref(7.90)
+    const deliveryCosts: Ref<number> = ref(7.90);
 
     const totalCartPriceWithDeliveryCosts = computed(() => {
         return itemsInCart.value.reduce((total, item) => {
             return total + item.quantity * item.product.price;
-        }, deliveryCosts.value)
-    })
+        }, deliveryCosts.value);
+    });
 
     function toggleCartSlider() {
-        showCartSlider.value = !showCartSlider.value
+        showCartSlider.value = !showCartSlider.value;
     }
 
     function hideCartSlider() {
-        showCartSlider.value = false
+        showCartSlider.value = false;
     }
 
-    watch(itemsInCart, newVal => {
-        if (newVal) {
-            if(route.path !== '/warenkorb') {
-               showCartSlider.value = true
-            }
-        }
-    }, {deep: true})
-
     watch(itemsInCart, (newVal) => {
-        localStorage.setItem('cartItems', JSON.stringify(newVal));
-    }, {deep: true});
-
+        localStorage.setItem(
+            'cartItems',
+            JSON.stringify(newVal.map(item => ({
+                product: item.product.toDto(),
+                quantity: item.quantity
+            })))
+        );
+    }, { deep: true });
 
     return {
         showCartSlider,
