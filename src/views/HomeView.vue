@@ -45,8 +45,8 @@ import {ProductCategory} from "@/models/Product";
 const productStore = useProductStore()
 
 const products = computed(() => {
-  return productStore.products
-})
+  return productStore.products.map(dto => Product.fromDto(dto));
+});
 const searchInput: Ref<string> = ref('')
 const selectedCategory: Ref<string> = ref('')
 

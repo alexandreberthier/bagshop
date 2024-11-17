@@ -5,12 +5,12 @@
       <DynamicInputField
           label="Email"
           v-model:user-input="emailAddress"
-          input-type="email"
+          :input-type="InputType.Email"
       />
       <DynamicInputField
           label="Passwort"
           v-model:user-input="password"
-          input-type="password"
+          :input-type="InputType.Password"
       />
 
       <DynamicButton
@@ -33,6 +33,7 @@ import DynamicButton from "@/components/DynamicButton.vue";
 import {useUserStore} from "@/stores/userStore";
 import {useRouter} from "vue-router";
 import {SiteLinks} from "@/enums/SiteLinks";
+import {InputType} from "@/enums/InputType";
 
 const userStore = useUserStore()
 const router = useRouter()
