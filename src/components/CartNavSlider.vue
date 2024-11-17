@@ -7,32 +7,38 @@
       <p v-if="!cartStore.totalCartItems">Dein Warenkorb ist leer</p>
       <div class="content" v-else>
         <div class="cart-items-flex">
-          <div v-for="(item, index) in cartStore.itemsInCart" class="cart-item">
+          <div v-for="(item, index) in cartStore.itemsInCart"
+               :key="index"
+               class="cart-item">
             <div v-if="item"
-                @click="cartStore.deleteProduct(item.product)"
-                class="icon-wrapper">
+                 @click="cartStore.deleteProduct(item.product)"
+                 class="icon-wrapper">
               <img :src="getImage('ic_delete.png')" alt="">
             </div>
-            <router-link :to="{name: SiteLinks.Details, params: {id: item.product.id}}">
+            <router-link
+                @click="cartStore.hideCartSlider()"
+                v-if="item.product.id"
+                :to="{ name: SiteLinks.Details, params: { id: item.product.id } }"
+            >
               <div class="image-wrapper">
                 <img :src="getImage(item.product.images[0])" alt="">
               </div>
             </router-link>
             <div class="info">
-              <p>{{item.product.displayName}}</p>
+              <p>{{ item.product.displayName }}</p>
               <div class="price-wrapper">
-                <p>{{item.quantity}}</p>
+                <p>{{ item.quantity }}</p>
                 <p>x</p>
-                <p>{{formatPrice(item.product.price)}}</p>
-                <p> | {{formatPrice(item.product.price * item.quantity)}}</p>
+                <p>{{ formatPrice(item.product.price) }}</p>
+                <p> | {{ formatPrice(item.product.price * item.quantity) }}</p>
               </div>
             </div>
-            </div>
+          </div>
         </div>
-       <div class="total-price">
-         <p>Gesamtpreis</p>
-         <p>{{formatPrice(cartStore.totalCartPrice)}}</p>
-       </div>
+        <div class="total-price">
+          <p>Gesamtpreis</p>
+          <p>{{ formatPrice(cartStore.totalCartPrice) }}</p>
+        </div>
         <DynamicButton
             @click="cartStore.hideCartSlider()"
             :is-router-link="true"
@@ -101,6 +107,7 @@ const cartStore = useCartStore()
         align-items: center;
         justify-content: space-between;
       }
+
       .cart-items-flex {
         display: flex;
         flex-direction: column;
@@ -132,17 +139,16 @@ const cartStore = useCartStore()
               width: 24px;
               height: 24px;
             }
-
           }
 
-          .info{
+          .info {
             display: flex;
             flex-direction: column;
             height: 100%;
             justify-content: center;
             gap: 10px;
 
-            .price-wrapper{
+            .price-wrapper {
               display: flex;
               justify-content: space-between;
             }

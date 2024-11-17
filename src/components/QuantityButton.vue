@@ -1,5 +1,5 @@
 <template>
-  <div tabindex="0" role="button" class="button-wrapper">
+  <div tabindex="0" role="button" :class="['button-wrapper', {'mobile': isMobileButton}]">
     <div
         @click="$emit('decrease')"
         class="icon-wrapper">
@@ -20,8 +20,9 @@
 
 import {getImage} from "@/utils/ImageUtils";
 
-const {quantity = 1} = defineProps<{
-  quantity: number
+const {quantity = 1, isMobileButton = false} = defineProps<{
+  quantity: number,
+  isMobileButton?: boolean
 }>()
 </script>
 
@@ -35,6 +36,27 @@ const {quantity = 1} = defineProps<{
   padding: 5px 10px;
   box-sizing: border-box;
   border: 1px solid var(--black);
+
+  &.mobile {
+    width: 100px;
+    height: 30px;
+
+    .icon-wrapper {
+      width: 20px;
+      height: 20px;
+
+      img {
+        width: 15px;
+        height: 15px;
+      }
+    }
+  }
+
+  .quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
   .icon-wrapper {
     display: flex;

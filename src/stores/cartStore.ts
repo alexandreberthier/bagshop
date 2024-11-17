@@ -50,6 +50,14 @@ export const useCartStore = defineStore('cart', () => {
         }, 0)
     })
 
+    const deliveryCosts: Ref<number> = ref(7.90)
+
+    const totalCartPriceWithDeliveryCosts = computed(() => {
+        return itemsInCart.value.reduce((total, item) => {
+            return total + item.quantity * item.product.price;
+        }, deliveryCosts.value)
+    })
+
     function toggleCartSlider() {
         showCartSlider.value = !showCartSlider.value
     }
@@ -79,6 +87,8 @@ export const useCartStore = defineStore('cart', () => {
         totalCartItems,
         totalCartPrice,
         itemsInCart,
-        deleteProduct
+        deleteProduct,
+        deliveryCosts,
+        totalCartPriceWithDeliveryCosts
     }
 })

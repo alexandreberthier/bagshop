@@ -1,19 +1,24 @@
 <template>
-  <router-link :to="{name: SiteLinks.Details, params: {id: product.id}}">
-    <div class="card-wrapper">
-      <div class="image-wrapper">
-        <img :src="getImage(product.images[0])" alt="">
-        <div class="hover-text">
-          <p>Details</p>
+  <div class="outer-wrapper">
+    <router-link :to="{name: SiteLinks.Details, params: {id: product.id}}">
+      <div class="card-wrapper">
+        <div class="image-wrapper">
+          <img :src="getImage(product.images[0])" alt="">
+          <div class="hover-text">
+            <p>Details</p>
+          </div>
+        </div>
+        <div class="product-info">
+          <p>{{ product.displayName }}</p>
+          <p>{{ product.getFormattedPrice() }}</p>
         </div>
       </div>
-      <div class="product-info">
-        <p>{{product.displayName}}</p>
-        <p>{{product.getFormattedPrice()}}</p>
-      </div>
-    </div>
-
-  </router-link>
+    </router-link>
+    <DynamicButton
+        @click="cartStore.addProduct(product, 1)"
+        button-text="In den Warenkorb"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -21,14 +26,24 @@
 import type {Product} from "@/models/Product";
 import {SiteLinks} from "@/enums/SiteLinks";
 import {getImage} from "@/utils/ImageUtils";
+import DynamicButton from "@/components/DynamicButton.vue";
+import {useCartStore} from "@/stores/cartStore";
 
 const {product} = defineProps<{
   product: Product
 }>()
 
+const cartStore = useCartStore()
+
 </script>
 
 <style scoped>
+
+.outer-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
 .card-wrapper {
   display: flex;
