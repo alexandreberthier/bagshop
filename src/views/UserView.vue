@@ -50,7 +50,6 @@ import {onMounted, type Ref, ref, watch} from "vue";
 import DynamicButton from "@/components/DynamicButton.vue";
 import {useUserStore} from "@/stores/userStore";
 import DynamicDropdown from "@/components/DynamicDropdown.vue";
-import {c} from "vite/dist/node/types.d-aGj9QkWt";
 
 interface Option {
   label: string;
