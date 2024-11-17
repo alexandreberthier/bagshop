@@ -36,29 +36,32 @@
 <script setup lang="ts">
 import ProductCard from "@/components/ProductCard.vue";
 import {useProductStore} from "@/stores/productStore";
-import {computed, type Ref, ref} from "vue";
+import {computed, type ComputedRef, type Ref, ref} from "vue";
 import DynamicInputField from "@/components/DynamicInputField.vue";
 import {InputType} from "@/enums/InputType";
-import {ProductCategory} from "@/models/Product";
+import {Product, ProductCategory} from "@/models/Product";
 
 
 const productStore = useProductStore()
 
-const products = computed(() => {
+const products: ComputedRef<Product[]> = computed(() => {
   return productStore.products.map(dto => Product.fromDto(dto));
 });
+
+
 const searchInput: Ref<string> = ref('')
 const selectedCategory: Ref<string> = ref('')
 
 const filteredProducts = computed(() => {
-  const byCategory = products.value.filter(product => {
+  const byCategory = products.value.filter((product: Product) => {
     return !selectedCategory.value || product.category === selectedCategory.value;
   });
 
-  return byCategory.filter(product => {
+  return byCategory.filter((product: Product) => {
     return !searchInput.value || product.displayName.toLowerCase().includes(searchInput.value.toLowerCase());
-  })
-})
+  });
+});
+
 
 function resetFilters() {
   searchInput.value = '';
