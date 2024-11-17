@@ -11,12 +11,13 @@
           :aria-describedby="userError ? errorId : undefined"
           :aria-invalid="userError ? 'true' : undefined"
       >
-      <div
-          v-if="inputType === 'password'"
-          @click="togglePasswordVisibility"
-          class="icon-wrapper">
-        <img :src="getImage('ic_hide.png')" alt="">
+      <div v-if="inputIcon"
+           class="icon-wrapper"
+           @click="inputType === InputType.Password ? togglePasswordVisibility() : undefined"
+      >
+        <img :src="inputIcon" alt=""/>
       </div>
+
     </div>
     <div
         v-if="userError"
@@ -31,10 +32,11 @@
 
 import {computed, type ModelRef, type Ref, ref, watch} from "vue";
 import {getImage} from "@/utils/ImageUtils";
+import {InputType} from "@/enums/InputType";
 
-const {label, inputType = 'text'} = defineProps<{
+const {label, inputType} = defineProps<{
   label: string
-  inputType?: string
+  inputType?: InputType
 }>()
 
 const userInput: ModelRef<string | undefined> = defineModel('userInput')
@@ -44,8 +46,22 @@ const inputId = computed(() => `input-${label}`)
 const errorId = computed(() => `error-${label}`)
 
 const computedInputType = computed(() => {
-  return inputType === "password" && showPassword.value ? "text" : inputType;
-});
+  if (inputType === InputType.Search) {
+    return "text";
+  }
+  return inputType === InputType.Password && showPassword.value ? "text" : inputType;
+})
+
+const inputIcon = computed(() => {
+  switch (inputType) {
+    case InputType.Password:
+      return showPassword.value ? getImage("ic_show.png") : getImage("ic_hide.png");
+    case InputType.Search:
+      return getImage("ic_search.png");
+    default:
+      return null;
+  }
+})
 
 const showPassword: Ref<boolean> = ref(false)
 
