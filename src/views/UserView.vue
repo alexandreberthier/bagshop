@@ -101,8 +101,7 @@ onMounted(() => {
     city.value = deliveryData.city || '';
     country.value = deliveryData.country || '';
   }
-});
-
+})
 
 async function saveUserData() {
   try {
@@ -111,7 +110,7 @@ async function saveUserData() {
         firstName: firstName.value,
         lastName: lastName.value,
         phoneNumber: phoneNumber.value,
-        email: userStore.user?.personalData?.email || '', // E-Mail bleibt unverändert
+        email: userStore.user?.personalData?.email || '',
       },
       deliveryData: {
         street: street.value,
