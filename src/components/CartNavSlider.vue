@@ -31,6 +31,7 @@
         </div>
        <div class="total-price">
          <p>Gesamtpreis</p>
+         <p>{{formatPrice(cartStore.totalCartPrice)}}</p>
        </div>
         <DynamicButton
             @click="cartStore.hideCartSlider()"
@@ -47,7 +48,7 @@
 import {useCartStore} from "@/stores/cartStore";
 import {getImage} from "@/utils/ImageUtils";
 import {SiteLinks} from "@/enums/SiteLinks";
-import {formatPrice} from "../utils/PriceFormatter";
+import {formatPrice} from "@/utils/PriceFormatter";
 import DynamicButton from "@/components/DynamicButton.vue";
 
 const cartStore = useCartStore()
@@ -94,6 +95,12 @@ const cartStore = useCartStore()
       display: flex;
       flex-direction: column;
       gap: 20px;
+
+      .total-price {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
       .cart-items-flex {
         display: flex;
         flex-direction: column;

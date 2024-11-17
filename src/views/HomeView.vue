@@ -61,7 +61,6 @@ const filteredProducts = computed(() => {
   })
 })
 
-
 function resetFilters() {
   searchInput.value = '';
   selectedCategory.value = '';
@@ -69,8 +68,7 @@ function resetFilters() {
 
 const hasActiveFilters = computed(() => {
   return !!searchInput.value || !!selectedCategory.value;
-});
-
+})
 
 const categoryOptions = ref([
   {
