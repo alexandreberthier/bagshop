@@ -99,6 +99,7 @@ function initializePayPalButtons() {
     onApprove(data, actions) {
       return actions.order.capture().then(async (details) => {
         try {
+          // API-Aufruf zum Senden der Bestätigungs-E-Mail
           const response = await fetch('/api/send-confirmation-email', {
             method: 'POST',
             headers: {
@@ -118,7 +119,6 @@ function initializePayPalButtons() {
           if (!response.ok) {
             const error = await response.json();
             console.error('Email Error:', error);
-            alert('Die Zahlung war erfolgreich, aber die E-Mail konnte nicht gesendet werden.');
           } else {
             console.log('E-Mail erfolgreich gesendet.');
           }
@@ -126,18 +126,14 @@ function initializePayPalButtons() {
           router.push({ name: 'order-confirmation' });
         } catch (error) {
           console.error('API-Aufruf fehlgeschlagen:', error);
-          alert('Die Zahlung war erfolgreich, aber es gab ein Problem beim Senden der Bestätigungs-E-Mail.');
         }
-      }).finally(() => {
-        // Popup schließen, falls noch geöffnet
-        const paypalWindow = window.open('', '_self');
-        if (paypalWindow) paypalWindow.close();
+      }).catch((err) => {
+        console.error("Fehler bei der Zahlung:", err);
       });
     },
 
     onError(err) {
       console.error("Fehler bei der Zahlung:", err);
-      alert("Ein Fehler ist aufgetreten. Bitte versuche es erneut.");
     },
   }).render("#paypal-button-container");
 }
