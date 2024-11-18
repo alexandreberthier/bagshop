@@ -97,38 +97,39 @@ function initializePayPalButtons() {
       });
     },
     onApprove(data, actions) {
-      return actions.order.capture().then((details) => {
-        // Sende die Bestätigungs-E-Mail
-        fetch('/api/send-confirmation-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: checkoutStore.email,
-            name: checkoutStore.firstName + ' ' + checkoutStore.lastName,
-            orderDetails: JSON.stringify(cartItems.value.map(item => ({
-              name: item.product.displayName,
-              quantity: item.quantity,
-              price: item.product.price,
-            })), null, 2),
-          }),
-        })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error('Failed to send confirmation email');
-              }
-              console.log('Confirmation email sent successfully');
-            })
-            .catch((error) => {
-              console.error('Error sending confirmation email:', error);
-            });
+      return actions.order.capture().then(async (details) => {
+        try {
+          const response = await fetch('/api/send-confirmation-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: checkoutStore.email,
+              name: `${checkoutStore.firstName} ${checkoutStore.lastName}`,
+              orderDetails: JSON.stringify(cartItems.value.map(item => ({
+                name: item.product.displayName,
+                quantity: item.quantity,
+                price: item.product.price,
+              })), null, 2),
+            }),
+          });
 
-        alert(`Vielen Dank für deinen Einkauf, ${details.payer.name.given_name}!`);
-        router.push({ name: 'order-confirmation' });
+          if (!response.ok) {
+            const error = await response.json();
+            console.error('Email Error:', error);
+            alert('Die Zahlung war erfolgreich, aber die E-Mail konnte nicht gesendet werden.');
+          } else {
+            console.log('E-Mail erfolgreich gesendet.');
+          }
+
+          router.push({ name: 'order-confirmation' });
+        } catch (error) {
+          console.error('API-Aufruf fehlgeschlagen:', error);
+          alert('Die Zahlung war erfolgreich, aber es gab ein Problem beim Senden der Bestätigungs-E-Mail.');
+        }
       });
     },
-
     onError(err) {
       console.error("Fehler bei der Zahlung:", err);
       alert("Ein Fehler ist aufgetreten. Bitte versuche es erneut.");
