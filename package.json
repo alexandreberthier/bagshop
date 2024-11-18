@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "firebase": "^11.0.2",
+    "nodemailer": "^6.9.16",
     "pinia": "^2.2.6",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5"
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
     "@types/node": "^22.9.0",
+    "@types/nodemailer": "^6.4.16",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vue/tsconfig": "^0.5.1",
     "npm-run-all2": "^7.0.1",

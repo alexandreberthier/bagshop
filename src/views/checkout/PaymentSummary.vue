@@ -98,10 +98,37 @@ function initializePayPalButtons() {
     },
     onApprove(data, actions) {
       return actions.order.capture().then((details) => {
+        // Sende die Bestätigungs-E-Mail
+        fetch('/api/send-confirmation-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: checkoutStore.email,
+            name: checkoutStore.firstName + ' ' + checkoutStore.lastName,
+            orderDetails: JSON.stringify(cartItems.value.map(item => ({
+              name: item.product.displayName,
+              quantity: item.quantity,
+              price: item.product.price,
+            })), null, 2),
+          }),
+        })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error('Failed to send confirmation email');
+              }
+              console.log('Confirmation email sent successfully');
+            })
+            .catch((error) => {
+              console.error('Error sending confirmation email:', error);
+            });
+
         alert(`Vielen Dank für deinen Einkauf, ${details.payer.name.given_name}!`);
-        router.push({ name: "order-confirmation" });
-      })
+        router.push({ name: 'order-confirmation' });
+      });
     },
+
     onError(err) {
       console.error("Fehler bei der Zahlung:", err);
       alert("Ein Fehler ist aufgetreten. Bitte versuche es erneut.");
