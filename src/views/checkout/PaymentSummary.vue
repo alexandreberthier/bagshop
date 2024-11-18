@@ -52,6 +52,7 @@ import {useRouter} from "vue-router";
 import {computed, onMounted} from "vue";
 import {getImage} from "@/utils/ImageUtils";
 import {formatPrice} from "@/utils/PriceFormatter";
+import emailjs from "@emailjs/browser";
 
 interface PayPalActions {
   order: {
@@ -82,6 +83,36 @@ const cartItems = computed(() => cartStore.itemsInCart);
 
 const totalAmount = computed(() => cartStore.totalCartPriceWithDeliveryCosts.toFixed(2));
 
+function sendEmail(details: any) {
+  const templateParams = {
+    to_name: checkoutStore.firstName, // Name des Empfängers
+    firstName: checkoutStore.firstName,
+    lastName: checkoutStore.lastName,
+    email: checkoutStore.email,
+    phoneNumber: checkoutStore.phoneNumber || "Nicht angegeben", // Optional
+    totalAmount: totalAmount.value,
+    transactionId: details.id,
+    products: cartItems.value
+        .map(item => `${item.quantity}x ${item.product.displayName}`)
+        .join("\n"), // Formatierung für mehrere Produkte
+    message: "Danke für deinen Einkauf! Deine Bestellung wird bearbeitet.",
+  };
+
+  emailjs
+      .send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+          templateParams,
+          import.meta.env.VITE_EMAILJS_USER_ID
+      )
+      .then(() => {
+        console.log("E-Mail erfolgreich gesendet.");
+      })
+      .catch(error => {
+        console.error("Fehler beim Senden der E-Mail:", error);
+      });
+}
+
 function initializePayPalButtons() {
   window.paypal.Buttons({
     createOrder(data, actions) {
@@ -97,43 +128,14 @@ function initializePayPalButtons() {
       });
     },
     onApprove(data, actions) {
-      return actions.order.capture().then(async (details) => {
-        try {
-          // API-Aufruf zum Senden der Bestätigungs-E-Mail
-          const response = await fetch('/api/send-confirmation-email', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: checkoutStore.email,
-              name: `${checkoutStore.firstName} ${checkoutStore.lastName}`,
-              orderDetails: JSON.stringify(cartItems.value.map(item => ({
-                name: item.product.displayName,
-                quantity: item.quantity,
-                price: item.product.price,
-              })), null, 2),
-            }),
-          });
-
-          if (!response.ok) {
-            const error = await response.json();
-            console.error('Email Error:', error);
-          } else {
-            console.log('E-Mail erfolgreich gesendet.');
-          }
-
-          router.push({ name: 'order-confirmation' });
-        } catch (error) {
-          console.error('API-Aufruf fehlgeschlagen:', error);
-        }
-      }).catch((err) => {
-        console.error("Fehler bei der Zahlung:", err);
+      return actions.order.capture().then((details) => {
+        sendEmail(details); // E-Mail senden
+        router.push({ name: "order-confirmation" });
       });
     },
-
     onError(err) {
       console.error("Fehler bei der Zahlung:", err);
+      alert("Ein Fehler ist aufgetreten. Bitte versuche es erneut.");
     },
   }).render("#paypal-button-container");
 }

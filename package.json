@@ -11,6 +11,7 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "firebase": "^11.0.2",
     "nodemailer": "^6.9.16",
     "pinia": "^2.2.6",
