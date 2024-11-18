@@ -92,7 +92,7 @@ export const useUserStore = defineStore('user', () => {
                     user.value = null;
                 }
                 isLoaded.value = true;
-                resolve(); // Authentifizierungsprüfung abgeschlossen
+                resolve();
             });
         });
     }

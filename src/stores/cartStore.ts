@@ -65,6 +65,11 @@ export const useCartStore = defineStore('cart', () => {
     }
 
     watch(itemsInCart, (newVal) => {
+        if (newVal.length === 0) {
+            showCartSlider.value = false;
+        } else {
+            showCartSlider.value = true;
+        }
         localStorage.setItem(
             'cartItems',
             JSON.stringify(newVal.map(item => ({
@@ -73,6 +78,11 @@ export const useCartStore = defineStore('cart', () => {
             })))
         );
     }, { deep: true });
+
+    function clearCartData(){
+        localStorage.removeItem('cartItems')
+        itemsInCart.value = []
+    }
 
     return {
         showCartSlider,
@@ -84,6 +94,7 @@ export const useCartStore = defineStore('cart', () => {
         itemsInCart,
         deleteProduct,
         deliveryCosts,
-        totalCartPriceWithDeliveryCosts
+        totalCartPriceWithDeliveryCosts,
+        clearCartData
     }
 })
