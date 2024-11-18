@@ -128,8 +128,13 @@ function initializePayPalButtons() {
           console.error('API-Aufruf fehlgeschlagen:', error);
           alert('Die Zahlung war erfolgreich, aber es gab ein Problem beim Senden der Bestätigungs-E-Mail.');
         }
+      }).finally(() => {
+        // Popup schließen, falls noch geöffnet
+        const paypalWindow = window.open('', '_self');
+        if (paypalWindow) paypalWindow.close();
       });
     },
+
     onError(err) {
       console.error("Fehler bei der Zahlung:", err);
       alert("Ein Fehler ist aufgetreten. Bitte versuche es erneut.");
