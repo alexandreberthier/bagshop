@@ -20,20 +20,23 @@ export default async function handler(req: any, res: any) {
     }
 
     try {
-        // Transporter konfigurieren (SMTP)
+        // Transporter konfigurieren (SMTP für Outlook)
         const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST, // SMTP-Host aus .env
-            port: Number(process.env.SMTP_PORT), // SMTP-Port aus .env
-            secure: process.env.SMTP_SECURE === 'true', // Boolean: TLS verwenden
+            host: process.env.SMTP_HOST || 'smtp.office365.com', // Standard-Host für Outlook
+            port: Number(process.env.SMTP_PORT) || 587, // Standard-Port für TLS
+            secure: false, // TLS benötigt `secure` auf `false`
             auth: {
-                user: process.env.SMTP_USER, // Benutzername
-                pass: process.env.SMTP_PASS, // Passwort
+                user: process.env.SMTP_USER, // Benutzername (Outlook E-Mail-Adresse)
+                pass: process.env.SMTP_PASS, // Passwort oder App-Passwort
+            },
+            tls: {
+                ciphers: 'SSLv3', // Optional: TLS-Einstellungen für ältere Konfigurationen
             },
         });
 
         // E-Mail senden
         await transporter.sendMail({
-            from: `"Shop Name" <${process.env.SMTP_FROM}>`, // Absender
+            from: `"Shop Name" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`, // Absender
             to: email, // Empfänger
             subject: 'Bestellbestätigung', // Betreff
             html: `
