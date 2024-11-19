@@ -79,6 +79,11 @@ function validatePhoneNumber(input: string): boolean {
   return phoneRegex.test(input);
 }
 
+function sanitizeToNumbers(input: string): string {
+  return input.replace(/\D/g, '');
+}
+
+
 watch(userInput, (newVal) => {
   const input = newVal?.trim();
 
@@ -88,11 +93,15 @@ watch(userInput, (newVal) => {
   }
 
   switch (inputType) {
-    case "email":
+    case InputType.Email:
       userError.value = validateEmail(input) ? undefined : "Ungültige Email-Adresse.";
       break;
-    case "tel":
+    case InputType.Phone:
       userError.value = validatePhoneNumber(input) ? undefined : "Ungültige Telefonnummer.";
+      break;
+    case InputType.PostalCode:
+      userInput.value = sanitizeToNumbers(input);
+      userError.value = userInput.value ? undefined : "Ungültige Postleitzahl.";
       break;
     default:
       userError.value = undefined;

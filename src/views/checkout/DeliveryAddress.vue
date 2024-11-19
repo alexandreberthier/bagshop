@@ -13,6 +13,7 @@
     <DynamicInputField
         v-model:user-input="checkoutStore.postalCode"
         v-model:user-error="postalCodeError"
+        :input-type="InputType.PostalCode"
         label="PLZ"
     />
     <DynamicInputField
@@ -20,10 +21,11 @@
         v-model:user-error="cityError"
         label="Stadt"
     />
-    <DynamicInputField
-        v-model:user-input="checkoutStore.country"
+
+    <DynamicDropdown
+        :options="countryOptions"
+        v-model:selected-option="checkoutStore.country"
         v-model:user-error="countryError"
-        label="Land"
     />
   </div>
 </template>
@@ -31,9 +33,10 @@
 <script setup lang="ts">
 
 import DynamicInputField from "@/components/DynamicInputField.vue";
-import {nextTick, type Ref, ref, watch} from "vue";
-import {useUserStore} from "@/stores/userStore";
+import {nextTick, type Ref, ref} from "vue";
 import {useCheckoutStore} from "@/stores/checkoutStore";
+import {InputType} from "@/enums/InputType";
+import DynamicDropdown from "@/components/DynamicDropdown.vue";
 
 const checkoutStore = useCheckoutStore()
 
@@ -42,6 +45,21 @@ const houseNumberError: Ref<string> = ref('')
 const postalCodeError: Ref<string> = ref('')
 const cityError: Ref<string> = ref('')
 const countryError: Ref<string> = ref('')
+
+const countryOptions: Ref<Option[]> = ref([
+  {
+    label: 'Österreich',
+    value: 'Österreich',
+  },
+  {
+    label: 'Deutschland',
+    value: 'Deutschland',
+  },
+  {
+    label: 'Schweiz',
+    value: 'Schweiz',
+  },
+])
 
 
 function validateInputFields(){

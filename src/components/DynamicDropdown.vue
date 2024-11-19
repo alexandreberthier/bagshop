@@ -30,12 +30,13 @@
         {{ option.label }}
       </p>
     </div>
+    <p v-if="userError" class="error">{{userError}}</p>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref, defineModel, watch } from "vue";
+import {ref, type Ref, defineModel, watch, type ModelRef} from "vue";
 import {getImage} from "@/utils/ImageUtils";
 
 interface Option {
@@ -47,6 +48,8 @@ interface Option {
 const selectedOption = defineModel<string>('selectedOption', {
   required: true
 })
+
+const userError: ModelRef<string| undefined> = defineModel('userError')
 
 const { options } = defineProps<{ options: Option[] }>();
 const showOptions = ref(false);
@@ -173,6 +176,11 @@ p {
         background-color: lightgrey;
       }
     }
+  }
+
+  .error {
+    text-align: right;
+    color: red;
   }
 }
 </style>

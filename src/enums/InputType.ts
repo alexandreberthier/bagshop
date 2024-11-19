@@ -3,5 +3,6 @@ export enum InputType {
     Email= 'email',
     Password= 'password',
     Search='search',
-    Phone='tel'
+    Phone='tel',
+    PostalCode='postalcode'
 }

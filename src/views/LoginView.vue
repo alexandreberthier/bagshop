@@ -19,7 +19,7 @@
       />
 
       <div v-if="userStore.error" class="error">
-        <p>{{userStore.error}}</p>
+        <p>{{ userStore.error }}</p>
       </div>
     </div>
   </div>
@@ -42,12 +42,17 @@ const emailAddress: Ref<string> = ref('')
 const password: Ref<string> = ref('')
 
 
-async function login(){
-  await userStore.login(emailAddress.value, password.value)
+async function login() {
+  await userStore.login(emailAddress.value, password.value);
   if (!userStore.error) {
-   await router.push({name: SiteLinks.User});
+    if (userStore.user && userStore.user.role === 'admin') {
+      await router.push({ name: SiteLinks.Admin });
+    } else {
+      await router.push({ name: SiteLinks.User });
+    }
   }
 }
+
 
 </script>
 
