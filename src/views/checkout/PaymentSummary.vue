@@ -53,6 +53,9 @@ import {computed, onMounted} from "vue";
 import {getImage} from "@/utils/ImageUtils";
 import {formatPrice} from "@/utils/PriceFormatter";
 import emailjs from "@emailjs/browser";
+import {useOrderStore} from "@/stores/oderStore";
+import {useUserStore} from "@/stores/userStore";
+import {DeliveryStatus, type OrderDTO} from "@/models/Order";
 
 interface PayPalActions {
   order: {
@@ -74,8 +77,9 @@ declare global {
     };
   }
 }
-
+const oderStore = useOrderStore()
 const checkoutStore = useCheckoutStore();
+const userStore = useUserStore()
 const cartStore = useCartStore();
 const router = useRouter();
 
@@ -113,6 +117,37 @@ function sendEmail(details: any) {
       });
 }
 
+async function saveOrder(details: any) {
+  const orderStore = useOrderStore();
+  const order: OrderDTO = {
+    userId: userStore.user?.id || "Gast",
+    personalData: {
+      firstName: checkoutStore.firstName,
+      lastName: checkoutStore.lastName,
+      email: checkoutStore.email,
+      phoneNumber: checkoutStore.phoneNumber || "",
+    },
+    deliveryData: {
+      street: checkoutStore.street,
+      houseNumber: checkoutStore.houseNumber,
+      postalCode: checkoutStore.postalCode,
+      city: checkoutStore.city,
+      country: checkoutStore.country,
+    },
+    items: cartItems.value.map((item) => ({
+      productId: item.product.id as string,
+      name: item.product.displayName,
+      price: item.product.price,
+      quantity: item.quantity,
+    })),
+    totalPrice: parseFloat(totalAmount.value),
+    status: DeliveryStatus.Pending,
+    createdAt: new Date(),
+  };
+  await orderStore.createOrder(order);
+}
+
+
 function initializePayPalButtons() {
   window.paypal.Buttons({
     createOrder(data, actions) {
@@ -128,7 +163,8 @@ function initializePayPalButtons() {
       });
     },
     onApprove(data, actions) {
-      return actions.order.capture().then((details) => {
+      return actions.order.capture().then(async (details) => {
+        await saveOrder(details); // Bestellung speichern
         sendEmail(details); // E-Mail senden
         router.push({ name: "order-confirmation" });
       });
@@ -139,6 +175,7 @@ function initializePayPalButtons() {
     },
   }).render("#paypal-button-container");
 }
+
 
 onMounted(() => {
   if (!window.paypal) {

@@ -1,16 +1,16 @@
 <template>
   <div class="site-wrapper">
-    <h1>Admin - Alle Bestellungen ansehen</h1>
-    <div v-if="isLoading">Lade Bestellungen...</div>
-    <div v-else-if="orders.length === 0">Keine Bestellungen gefunden.</div>
+    <h1>Meine Bestellungen</h1>
+    <div v-if="isLoading">Bestellungen werden geladen...</div>
+    <div v-else-if="userOrders.length === 0">Du hast noch keine Bestellungen.</div>
     <div v-else>
       <div class="order-list">
         <div
-            v-for="(order, index) in orders"
+            v-for="(order, index) in userOrders"
             :key="index"
             class="order-item"
         >
-          <h3>Bestellung ID: {{ order.userId || "Gast" }}</h3>
+          <h3>Bestellung</h3>
           <p><strong>Status:</strong> {{ order.status }}</p>
           <p><strong>Gesamtpreis:</strong> {{ formatPrice(order.totalPrice) }}</p>
           <p><strong>Erstellt am:</strong> {{ formatTimestamp(order.createdAt) }}</p>
@@ -27,29 +27,51 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
-import { useOrderStore } from "@/stores/oderStore";
+
+import { useUserStore } from "@/stores/userStore";
 import { onMounted, computed } from "vue";
 import { formatPrice } from "@/utils/PriceFormatter";
+import type { Timestamp } from "firebase/firestore";
+import {useOrderStore} from "@/stores/oderStore";
 
-// Order-Store verwenden
 const orderStore = useOrderStore();
-const isLoading = computed(() => orderStore.isLoading);
-const orders = computed(() => orderStore.orders);
+const userStore = useUserStore();
 
-// Hilfsfunktion zur Formatierung von Timestamp
-function formatTimestamp(timestamp: any): string {
-  if (timestamp.toDate) {
-    return timestamp.toDate().toLocaleString();
+// Computed Properties
+const isLoading = computed(() => orderStore.isLoading);
+const userOrders = computed(() => orderStore.orders);
+
+// Hilfsfunktion zur Formatierung von Timestamps
+function formatTimestamp(timestamp: Date | Timestamp | null): string {
+  if (!timestamp) return "Unbekanntes Datum";
+
+  // Konvertiere Firestore-Timestamp in Date
+  if (typeof (timestamp as Timestamp).toDate === "function") {
+    return (timestamp as Timestamp).toDate().toLocaleString();
   }
-  return new Date(timestamp).toLocaleString();
+
+  // Falls es bereits ein Date ist
+  if (timestamp instanceof Date) {
+    return timestamp.toLocaleString();
+  }
+
+  return "Ungültiges Datum";
 }
 
-// Bestellungen beim Mounten laden
+// Bestellungen für den eingeloggten Benutzer laden
 onMounted(async () => {
-  await orderStore.fetchAllOrders();
+  const userId = userStore.user?.id;
+  if (userId) {
+    await orderStore.fetchUserOrders(userId);
+  } else {
+    console.warn("Benutzer ist nicht eingeloggt.");
+  }
 });
 </script>
+
+
 
 <style scoped>
 .site-wrapper {

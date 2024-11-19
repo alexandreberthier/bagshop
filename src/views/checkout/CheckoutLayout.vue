@@ -48,7 +48,6 @@ import DynamicButton from "@/components/DynamicButton.vue";
 import { ButtonType } from "@/enums/ButtonType";
 import {SiteLinks} from "@/enums/SiteLinks";
 import {useCartStore} from "@/stores/cartStore";
-import {useUserStore} from "@/stores/userStore";
 import {useCheckoutStore} from "@/stores/checkoutStore";
 
 interface ValidatableComponent {
@@ -61,6 +60,7 @@ const checkoutStore = useCheckoutStore()
 function clearLocalStorageData() {
   cartStore.clearCartData()
   checkoutStore.clearUserData()
+  localStorage.clear()
 }
 
 const router = useRouter();

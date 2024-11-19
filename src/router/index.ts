@@ -15,6 +15,8 @@ import FaqView from "@/views/FaqView.vue";
 import LoginView from "@/views/LoginView.vue";
 import Registrieren from "@/views/Registrieren.vue";
 import {useUserStore} from "@/stores/userStore";
+import UserData from "@/views/UserData.vue";
+import UserOrders from "@/views/UserOrders.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -70,7 +72,19 @@ const router = createRouter({
       path: '/user',
       name: 'user',
       component: UserView,
-      meta: {requiresAuth: true}
+      meta: {requiresAuth: true},
+      children: [
+        {
+          path: '',
+          name: 'user-data',
+          component: UserData
+        },
+        {
+          path: 'orders',
+          name: 'user-orders',
+          component: UserOrders
+        }
+      ]
     },
     {
       path: '/checkout',
@@ -119,6 +133,8 @@ const router = createRouter({
       return { top: 0, left: 0, behavior: "smooth" }
     }
   },
+  linkActiveClass: 'active',
+  linkExactActiveClass: 'active'
 
 })
 

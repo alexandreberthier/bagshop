@@ -60,6 +60,12 @@ p, span {
   margin: 0 auto;
 }
 
+.active {
+  font-weight: bold;
+  text-decoration: underline;
+  background-color: lavender;
+}
+
 @media (min-width: 740px) {
   .site-wrapper {
     width: 620px;
